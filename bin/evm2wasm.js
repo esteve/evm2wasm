@@ -7,7 +7,7 @@ const fs = require('fs')
 // convert evm bytecode to WASM or WAST
 function convert (bytecode, wast) {
   return new Promise((resolve, reject) => {
-    outputFile = argv.o ? argv.o : undefined
+    const enableTracing = argv.trace !== undefined
 
     if (!bytecode) {
       resolve(Buffer.from(''))
@@ -15,7 +15,7 @@ function convert (bytecode, wast) {
 
     if (wast) {
       let output = evm2wasm.evm2wast(bytecode, {
-        stackTrace: false,
+        stackTrace: enableTracing,
         tempName: 'temp',
         inlineOps: true,
         wabt: false
@@ -23,7 +23,7 @@ function convert (bytecode, wast) {
       resolve(output)
     } else {
       evm2wasm.evm2wasm(bytecode, {
-        stackTrace: false,
+        stackTrace: enableTracing,
         tempName: 'temp',
         inlineOps: true,
         wabt: false
