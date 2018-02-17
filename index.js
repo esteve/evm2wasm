@@ -310,15 +310,15 @@ exports.evm2wast = function (evmCode, opts = {
       opcodesUsed.add(op.name)
     }
 
+    // creates a stack trace
+    if (opts.stackTrace) {
+      segment += `(call $stackTrace (i32.const ${pc}) (i32.const ${opint}) (i32.const ${gasCount}) (get_global $sp))\n`
+    }
+
     const stackDeta = op.on - op.off
     // update the stack pointer
     if (stackDeta !== 0) {
       segment += `(set_global $sp (i32.add (get_global $sp) (i32.const ${stackDeta * 32})))\n`
-    }
-
-    // creates a stack trace
-    if (opts.stackTrace) {
-      segment += `(call $stackTrace (i32.const ${pc}) (i32.const ${opint}) (i32.const ${gasCount}) (get_global $sp))\n`
     }
 
     // adds the logic to save the stack pointer before exiting to wiat to for a callback
@@ -506,7 +506,7 @@ exports.buildModule = function (funcs, imports = [], callbacks = []) {
 (module
   ${imports.join('\n')}
   (global $cb_dest (mut i32) (i32.const 0))
-  (global $sp (mut i32) (i32.const -32))
+  (global $sp (mut i32) (i32.const 0))
   (global $init (mut i32) (i32.const 0))
 
   ;; memory related global
